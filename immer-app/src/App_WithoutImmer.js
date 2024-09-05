@@ -1,8 +1,4 @@
 import React, {useRef, useState, useCallback} from 'react';
-// 불변성을 유지하기 위한 produce 메소드 임포트
-// produce 메소드의 매개변수로 state 현재 값을 받아올 수 있다.
-// 리턴되는 값은 새로운 state의 값
-import {produce} from 'immer';
 
 function App() {
   // useRef는 유일한 값을 만들어주기 때문에 객체의 id로도 활용할 수 있다.
@@ -21,13 +17,10 @@ function App() {
     console.log(value);
 
     // 불변성 유지
-    setForm(
-      produce((f) => {
-        // draft 변수에는 form의 현재 값이 담겨있다.
-        // {username: "asdfaksdf", password: "asdlkfjaslkdfj"}
-        f[name] = value;
-      })
-    );
+    setForm({
+      ...form,
+      [name]: value
+    });
   }, [form]);
 
   // 등록버튼을 눌렀을 때 동작할 메소드
@@ -42,11 +35,10 @@ function App() {
     };
 
     // data.array 배열에 위에서 만든 데이터 객체 추가. 불변성 유지
-    setData(
-      produce((d) => {
-        d['array'] = d.array.concat(info)
-      })
-    );
+    setData({
+      ...data,
+      array: data.array.concat(info)
+    });
 
     // 사용자 등록후에는 input 초기화
     setForm({
@@ -61,11 +53,13 @@ function App() {
   const deleteUserInfo = useCallback((id) => {
     console.log(id);
     // data에 있는 사용자 객체 삭제
-    setData(produce(
-      (d) =>{
-        d['array'] = d.array.filter(info=> info.id !== id)
-      }
-    ));
+    setData({
+      ...data,
+      // filter: 조건식에서 true가 리턴되는 값들만 모아서 새로운 배열로 만든다.
+      array: data.array.filter(info => {
+        console.log(info.id);
+        return info.id !== id})
+    });
   }, [data]);
 
   return (
