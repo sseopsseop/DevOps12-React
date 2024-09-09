@@ -23,4 +23,5 @@ const TodoListItem = ({todo, removeTodo, changeChecked}) => {
   );
 };
 
-export default TodoListItem;
+// 최적화 1 : React.memo 사용. 변화가 없는 컴포넌트는 리렌더링하지 않도록 한다
+export default React.memo(TodoListItem);

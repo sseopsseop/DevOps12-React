@@ -2,7 +2,6 @@ import TodoInsert from "./components/TodoInsert";
 import TodoTemplate from "./components/TodoTemplate";
 import TodoList from "./components/TodoList";
 import {useState, useRef, useCallback} from 'react';
-
 import {produce} from 'immer';
 
 function App() {
@@ -41,19 +40,29 @@ function App() {
     todoId.current += 1;
   }, [todos]);
 
-  // 삭제하는 메소드
-  const deleteTodo = useCallback((id)=>{
-    setTodos(produce(
-      (d) => {
-        return d.filter(info=> info.id !== id);
-      }
-    ));
+  const removeTodo = useCallback((id) => {
+    setTodos(
+      produce(
+        draft => draft.filter(todo => todo.id !== id))
+    );
+  }, [todos]);
+
+  const changeChecked = useCallback((id) => {
+    setTodos(
+      produce(
+        draft => draft.map(
+          todo => todo.id === id 
+                  ? {...todo, checked: !todo.checked}
+                  : todo
+        )
+      )
+    )
   }, [todos]);
 
   return (
     <TodoTemplate>
       <TodoInsert addTodo={addTodo}/>
-      <TodoList todos={todos} deleteTodo={deleteTodo}/>
+      <TodoList todos={todos} removeTodo={removeTodo} changeChecked={changeChecked}/>
     </TodoTemplate>
   );
 }
