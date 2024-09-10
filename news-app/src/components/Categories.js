@@ -1,5 +1,6 @@
 import React from 'react';
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
 
 const categories = [
     {
@@ -46,7 +47,7 @@ const CategoriesBlock = styled.div`
 // styled-component도 컴포넌트로 사용되기 때문에 props를 받아올수 있고
 // props의 값에 따라 조건부 스타일링을 할 수 있는데
 // styled-components 라이브러리의 css 메소드를 이용한다.
-const Category = styled.div`
+const Category = styled(NavLink)`
     font-size: 1.125rem;
     cursor: pointer;
     white-space: pre;
@@ -62,26 +63,23 @@ const Category = styled.div`
         margin-left: 1rem;
     }
 
-    ${
-        props =>
-            props.active && css`
-                font-weight: 600;
-                border-bottom: 2px solid #22b8cf;
-                color: #22b8cf;
-                &:hover {
-                    color: #3bc9bd;
-                }
-            `
+    &.active {
+        font-weight: 600;
+        border-bottom: 2px solid #22b8cf;
+        color: #22b8cf;
+        &:hover {
+            color: #3bc9bd;
+        }
     }
 `;
 
-const Categories = ({category, changeCategory}) => {
+const Categories = () => {
   return (
     <CategoriesBlock>
         {categories && categories.map(
             cate => <Category key={cate.name} 
-                              active={category === cate.name}
-                              onClick={() => changeCategory(cate.name)}>{cate.text}</Category>
+                              to={cate.name === 'all' ? '/' : `/${cate.name}`}
+                              className={({isActive}) => isActive ? 'active' : undefined}>{cate.text}</Category>
         )}
     </CategoriesBlock>
   );

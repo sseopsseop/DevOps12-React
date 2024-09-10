@@ -5,7 +5,7 @@ function App() {
   const [data, setData] = useState(null);
 
   // const loadData = () => {
-  //     axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=058810c3463347678a29c0b8305b1dd7`)
+  //     axios.get(`https://newsapi.org/v2/top-headlines?country=us&apiKey=542d97e5e5b04b75bfd818df0ed3066b`)
   //         .then(response => console.log(response))
   //         .catch(e => console.log(e));
 
@@ -14,7 +14,7 @@ function App() {
   const loadData = async () => {
     try {
       const response = await axios.get(
-        `https://newsapi.org/v2/top-headlines?country=us&apiKey=058810c3463347678a29c0b8305b1dd7`);
+        `https://newsapi.org/v2/top-headlines?country=us&apiKey=542d97e5e5b04b75bfd818df0ed3066b`);
       setData(response.data.articles);
     } catch(e) {
       console.log(e);
