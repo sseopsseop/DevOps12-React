@@ -11,26 +11,31 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @SequenceGenerator(
-        name="todoSeqGenerator",
-        sequenceName="TODO_SEQ",
+        name = "todoSeqGenerator",
+        sequenceName = "TODO_SEQ",
         initialValue = 1,
         allocationSize = 1
 )
 public class Todo {
     @Id
     @GeneratedValue(
-            strategy = GenerationType.IDENTITY,
+            strategy = GenerationType.SEQUENCE,
             generator = "todoSeqGenerator"
     )
     private Long id;
     private String text;
     private boolean checked;
 
+    @ManyToOne
+    @JoinColumn(name="member_id")
+    private Member member;
+
     public TodoDto toDto() {
         return TodoDto.builder()
                     .id(this.id)
                     .text(this.text)
                     .checked(this.checked)
+                    .member_id(this.member.getId())
                     .build();
     }
 }

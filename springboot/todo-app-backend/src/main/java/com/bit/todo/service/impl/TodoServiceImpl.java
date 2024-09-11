@@ -1,6 +1,7 @@
 package com.bit.todo.service.impl;
 
 import com.bit.todo.dto.TodoDto;
+import com.bit.todo.entity.Member;
 import com.bit.todo.entity.Todo;
 import com.bit.todo.repository.TodoRepository;
 import com.bit.todo.service.TodoService;
@@ -15,28 +16,28 @@ public class TodoServiceImpl implements TodoService {
     private final TodoRepository todoRepository;
 
     @Override
-    public List<TodoDto> post(TodoDto todoDto) {
-        todoRepository.save(todoDto.toEntity());
-        return todoRepository.findAll().stream().map(Todo::toDto).toList();
+    public List<TodoDto> post(TodoDto todoDto, Member member) {
+        todoRepository.save(todoDto.toEntity(member));
+        return todoRepository.findByMemberUsername(member.getUsername()).stream().map(Todo::toDto).toList();
     }
 
     @Override
-    public List<TodoDto> findAll() {
-        return todoRepository.findAll().stream().map(Todo::toDto).toList();
+    public List<TodoDto> findAll(Member member) {
+        return todoRepository.findByMemberUsername(member.getUsername()).stream().map(Todo::toDto).toList();
     }
 
     @Override
-    public List<TodoDto> deleteById(Long id) {
+    public List<TodoDto> deleteById(Long id, Member member) {
         todoRepository.deleteById(id);
-        return todoRepository.findAll().stream().map(Todo::toDto).toList();
+        return todoRepository.findByMemberUsername(member.getUsername()).stream().map(Todo::toDto).toList();
     }
 
     @Override
-    public List<TodoDto> modify(TodoDto todoDto) {
+    public List<TodoDto> modify(TodoDto todoDto, Member member) {
         todoDto.setChecked(!todoDto.isChecked());
 
-        todoRepository.save(todoDto.toEntity());
-        return todoRepository.findAll().stream().map(Todo::toDto).toList();
+        todoRepository.save(todoDto.toEntity(member));
+        return todoRepository.findByMemberUsername(member.getUsername()).stream().map(Todo::toDto).toList();
     }
 
 

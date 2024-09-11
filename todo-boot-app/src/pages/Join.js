@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     Button,
     TextField,
@@ -7,11 +7,40 @@ import {
     Container,
     Typography
 } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Join = () => {
+    const navi = useNavigate();
+    const join = useCallback(async (username, password) => {
+        try {
+            const response = await axios.post('http://localhost:9090/members/join',
+                {username: username, password: password}
+            );
+
+            if(response.data.item && response.data.statusCode === 201){
+                alert("회원가입 완료됐습니다. 로그인 페이지로 이동합니다.");
+                navi("/login");
+            }
+        } catch(e) {
+            if(e.response.data.statusMessage === 'already exist username'){
+                alert("이미 존재하는 아이디입니다.");
+                return;
+            }
+        }
+    }, [navi]);
+
+    const handleSubmit = useCallback((e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+
+        join(formData.get("username"), formData.get("password"));
+    }, [join]);
+
   return (
     <Container component="main" maxWidth="xs" style={{marginTop: '8%'}}>
-        <form>
+        <form onSubmit={handleSubmit}>
             <Grid2 container spacing={2}>
                 <Grid2 item size={{xs: 12}}>
                     <Typography component='h1' variant='h5'>

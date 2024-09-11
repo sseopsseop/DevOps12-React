@@ -2,10 +2,12 @@ package com.bit.todo.controller;
 
 import com.bit.todo.dto.ResponseDto;
 import com.bit.todo.dto.TodoDto;
+import com.bit.todo.entity.CustomUserDetails;
 import com.bit.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,11 +19,12 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody TodoDto todoDto) {
+    public ResponseEntity<?> post(@RequestBody TodoDto todoDto,
+                                  @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ResponseDto<TodoDto> responseDto = new ResponseDto<>();
 
         try {
-            List<TodoDto> todoDtoList = todoService.post(todoDto);
+            List<TodoDto> todoDtoList = todoService.post(todoDto, customUserDetails.getMember());
 
             responseDto.setItems(todoDtoList);
             responseDto.setStatusCode(HttpStatus.CREATED.value());
@@ -36,11 +39,12 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getTodos() {
+    public ResponseEntity<?> getTodos(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ResponseDto<TodoDto> responseDto = new ResponseDto<>();
 
         try {
-            List<TodoDto> todoDtoList = todoService.findAll();
+            List<TodoDto> todoDtoList = todoService.findAll(customUserDetails.getMember());
 
             responseDto.setItems(todoDtoList);
             responseDto.setStatusCode(HttpStatus.OK.value());
@@ -55,11 +59,12 @@ public class TodoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> removeTodo(@PathVariable("id") Long id) {
+    public ResponseEntity<?> removeTodo(@PathVariable("id") Long id,
+                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ResponseDto<TodoDto> responseDto = new ResponseDto<>();
 
         try {
-            List<TodoDto> todoDtoList = todoService.deleteById(id);
+            List<TodoDto> todoDtoList = todoService.deleteById(id, customUserDetails.getMember());
 
             responseDto.setItems(todoDtoList);
             responseDto.setStatusCode(HttpStatus.NO_CONTENT.value());
@@ -74,11 +79,12 @@ public class TodoController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> modifyTodo(@RequestBody TodoDto todoDto) {
+    public ResponseEntity<?> modifyTodo(@RequestBody TodoDto todoDto,
+                                        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ResponseDto<TodoDto> responseDto = new ResponseDto<>();
 
         try {
-            List<TodoDto> todoDtoList = todoService.modify(todoDto);
+            List<TodoDto> todoDtoList = todoService.modify(todoDto, customUserDetails.getMember());
 
             responseDto.setItems(todoDtoList);
             responseDto.setStatusCode(HttpStatus.OK.value());

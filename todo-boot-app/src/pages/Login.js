@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {
     Button,
     TextField,
@@ -7,11 +7,46 @@ import {
     Container,
     Typography
 } from '@mui/material';
+import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
+
 
 const Login = () => {
+    const navi = useNavigate();
+
+    const login = useCallback(async (username, password)=>{
+        try{
+            const response = await axios.post("http://localhost:9090/members/login", 
+                {username: username, password: password});
+
+            if(response.data.item && response.data.statusCode === 200){
+                sessionStorage.setItem("ACCESS_TOKEN", response.data.item.token);
+                navi("/");
+            }
+        }catch(e){
+            if(e.response.data.statusMessage === 'username not exist'){
+                alert('존재하지 않는 사용자입니다.');
+                return;
+            }
+
+            if(e.response.data.statusMessage === 'wrong password'){
+                alert('비밀번호가 틀렸습니다.');
+                return;
+            }
+        }
+    },[navi]);
+
+    const handleSubmit = useCallback((e)=>{
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+
+        login(formData.get("username"), formData.get("password"));
+    }, [login]);
+
   return (
     <Container component="main" maxWidth="xs" style={{marginTop: '8%'}}>
-        <form>
+        <form onSubmit={handleSubmit}>
             <Grid2 container spacing={2}>
                 <Grid2 item size={{xs: 12}}>
                     <Typography component='h1' variant='h5'>
