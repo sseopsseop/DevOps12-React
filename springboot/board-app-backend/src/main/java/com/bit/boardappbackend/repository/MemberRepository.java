@@ -10,7 +10,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     long countByUsername(String username);
 
-    long countByNickname(String nickname);
-
-    boolean existsByUsername(String username);
+    long countByNickname(java.lang.String nickname);
 }
