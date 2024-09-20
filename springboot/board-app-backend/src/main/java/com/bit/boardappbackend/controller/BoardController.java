@@ -32,15 +32,16 @@ public class BoardController {
     * */
     public ResponseEntity<?> post(@RequestPart("boardDto") BoardDto boardDto,
             @RequestPart(value = "uploadFiles", required = false) MultipartFile[] uploadFiles,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                  @PageableDefault(page = 0, size = 10) Pageable pageable) {
         ResponseDto<BoardDto> responseDto = new ResponseDto<>();
 
         try {
             log.info("post boardDto: {}", boardDto);
-            List<BoardDto> boardDtoList = boardService.post(boardDto, uploadFiles, customUserDetails.getMember());
+            Page<BoardDto> boardDtoList = boardService.post(boardDto, uploadFiles, customUserDetails.getMember(), pageable);
 
             log.info("post boardDtoList: {}", boardDtoList);
-            responseDto.setItems(boardDtoList);
+            responseDto.setPageItems(boardDtoList);
             responseDto.setStatusCode(HttpStatus.CREATED.value());
             responseDto.setStatusMessage("created");
 
@@ -79,9 +80,45 @@ public class BoardController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable("id") long id){
+        ResponseDto<BoardDto> responseDto = new ResponseDto<BoardDto>();
 
+        try{
+            BoardDto boardDetail = boardService.findById(id);
 
+            responseDto.setItem(boardDetail);
+            responseDto.setStatusCode(HttpStatus.OK.value());
+            responseDto.setStatusMessage("ok");
 
+            return ResponseEntity.ok(responseDto);
+        }catch(Exception e){
+
+            log.error("getDetailBoard error: {}", e.getMessage());
+            responseDto.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDto.setStatusMessage(e.getMessage());
+            return ResponseEntity.internalServerError().body(responseDto);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id") long id){
+        ResponseDto<BoardDto> responseDto = new ResponseDto<>();
+        try{
+            log.info("deleteById : {}", id);
+            boardService.deleteById(id);
+
+            responseDto.setStatusCode(HttpStatus.NO_CONTENT.value());
+            responseDto.setStatusMessage("no content");
+            return ResponseEntity.ok(responseDto);
+        }catch(Exception e){
+
+            log.error("deleteById error: {}", e.getMessage());
+            responseDto.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDto.setStatusMessage(e.getMessage());
+            return ResponseEntity.internalServerError().body(responseDto);
+        }
+    }
 
 
 

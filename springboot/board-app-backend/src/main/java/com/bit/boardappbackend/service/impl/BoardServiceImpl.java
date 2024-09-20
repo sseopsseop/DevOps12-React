@@ -26,7 +26,7 @@ public class BoardServiceImpl implements BoardService {
     private final FileUtils fileUtils;
 
     @Override
-    public List<BoardDto> post(BoardDto boardDto, MultipartFile[] uploadFiles, Member member) {
+    public Page<BoardDto> post(BoardDto boardDto, MultipartFile[] uploadFiles, Member member, Pageable pageable) {
         boardDto.setRegdate(LocalDateTime.now());
         boardDto.setModdate(LocalDateTime.now());
 
@@ -46,7 +46,10 @@ public class BoardServiceImpl implements BoardService {
 
         boardRepository.save(board);
 
-        return boardRepository.findAll().stream().map(Board::toDto).toList();
+//        return boardRepository
+//                .searchAll("all", "", pageable)
+//                .map(Board::toDto);
+        return boardRepository.findAll(pageable).map(Board::toDto);
     }
 
     @Override
@@ -54,5 +57,15 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository
                 .searchAll(searchCondition, searchKeyword, pageable)
                 .map(Board::toDto);
+    }
+
+    @Override
+    public BoardDto findById(long id) {
+        return boardRepository.findById(id).orElseThrow(()-> new RuntimeException("board not exist")).toDto();
+    }
+
+    @Override
+    public void deleteById(long id) {
+        boardRepository.deleteById(id);
     }
 }
